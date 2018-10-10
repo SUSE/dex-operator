@@ -1,0 +1,38 @@
+apiVersion: kubic.opensuse.org/v1beta1
+kind: LDAPConnector
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: external-ldap-server
+spec:
+  id: some-id
+  name: ldap.suse.de
+  server: "ldap.suse.de:389"
+  user:
+    baseDn: "ou=People,dc=infra,dc=caasp,dc=local"
+    filter: "(objectClass=inetOrgPerson)"
+    username: mail
+    idAttr: DN
+    emailAttr: mail
+    nameAttr: cn
+    group:
+  group:
+    baseDn: "ou=Groups,dc=infra,dc=caasp,dc=local"
+    filter: "(objectClass=groupOfUniqueNames)"
+    userAttr: DN
+    nameAttr: cn
+    groupAttr: uniqueMember
+
+--- 
+
+apiVersion: kubic.opensuse.org/v1beta1
+kind: DexConfiguration
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: dex-configuration
+spec:
+  # Add fields here
+  nodePort: 32000
+  adminGroup: Administrators
+

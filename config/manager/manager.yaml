@@ -1,0 +1,78 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: -service
+  # (^ this will be replaced)
+  namespace: system
+  labels:
+    control-plane: dex-operator-manager
+    controller-tools.k8s.io: "1.0"
+spec:
+  selector:
+    control-plane: dex-operator-manager
+    controller-tools.k8s.io: "1.0"
+  clusterIP: None
+  ports:
+  - port: 443
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: -manager
+  namespace: system
+  labels:
+    control-plane: dex-operator-manager
+    controller-tools.k8s.io: "1.0"
+spec:
+  # replicas: 3
+  selector:
+    matchLabels:
+      control-plane: dex-operator-manager
+      controller-tools.k8s.io: "1.0"
+  serviceName: -service
+  # (^ this will be replaced)
+  template:
+    metadata:
+      labels:
+        control-plane: dex-operator-manager
+        controller-tools.k8s.io: "1.0"
+    spec:
+      serviceAccountName: dex-controller
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+      - key: "CriticalAddonsOnly"
+        operator: "Exists"
+
+      # ensure dex pods are running on different hosts
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - dex-operator
+              topologyKey: "kubernetes.io/hostname"
+
+      containers:
+      - image: opensuse/dex-operator
+        name: dex-operator
+        command:
+         - "/usr/local/bin/dex-operator"
+         - "manager"
+         - "-v=5"
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: 100m
+            memory: 30Mi
+          requests:
+            cpu: 100m
+            memory: 20Mi
+      terminationGracePeriodSeconds: 10

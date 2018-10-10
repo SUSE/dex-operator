@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .DexName }}
+    kubernetes.io/cluster-service: "true"
+  annotations:
+    seccomp.security.alpha.kubernetes.io/pod: docker/default
+  name: {{ .DexName }}
+  namespace: {{ .DexNamespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .DexName }}
+  replicas: {{ .DexDeploymentReplicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ .DexName }}
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ''
+        # Kubernetes will not restart dex when the configmap or secret changes, and
+        # dex will not notice anything has been changed either. By storing the checksum
+        # within an annotation, we force Kubernetes to perform the rolling restart
+        # of all Dex pods.
+        checksum/configmap: {{ .DexConfigMapSha }}
+        checksum/secret: {{ .DexCertSha }}
+    spec:
+      serviceAccountName: {{ .DexServiceAccount }}
+
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+      - key: "CriticalAddonsOnly"
+        operator: "Exists"
+
+      # ensure dex pods are running on different hosts
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - {{ .DexName }}
+              topologyKey: "kubernetes.io/hostname"
+
+      containers:
+      - image: {{ .DexImage }}
+        name: dex
+        command: ["/usr/bin/caasp-dex", "serve", "{{ .DexConfigMapFilename }}"]
+
+        ports:
+        - name: https
+          containerPort: 5556
+
+        # TODO: evaluate if we should use this:
+        #
+        #securityContext:
+        #  allowPrivilegeEscalation: false
+        #  capabilities:
+        #    add:
+        #    - NET_BIND_SERVICE
+        #    drop:
+        #    - all
+        #  readOnlyRootFilesystem: true
+
+        readinessProbe:
+          # Give Dex a little time to startup
+          initialDelaySeconds: 30
+          failureThreshold: 5
+          successThreshold: 5
+          timeoutSeconds: 10
+          httpGet:
+            path: /healthz
+            port: https
+            scheme: HTTPS
+
+        livenessProbe:
+          # Give Dex a little time to startup
+          initialDelaySeconds: 30
+          timeoutSeconds: 10
+          httpGet:
+            path: /healthz
+            port: https
+            scheme: HTTPS
+
+        volumeMounts:
+        - name: config
+          mountPath: {{ .DexConfigMapFilename | dirname }}
+        - name: tls
+          mountPath: {{ .DexCertsDir }}
+
+      volumes:
+      - name: config
+        configMap:
+          name: {{ .DexConfigMapName }}
+          items:
+          - key: {{ .DexConfigMapFilename | basename }}
+            path: {{ .DexConfigMapFilename | basename }}
+
+      - name: tls
+        secret:
+          secretName: {{ .DexCertsSecretName }}

@@ -1,0 +1,20 @@
+
+# the main binary
+cmd/dex-operator/dex-operator
+
+# images
+*dex-operator-latest.tar.gz
+
+# vendored deps, IDEs and other dirs
+vendor/
+.idea
+
+robots.txt*
+
+# generated files
+*deepcopy.go
+*generated.go
+# config/rbac/*.yaml
+config/crds/*.yaml
+
+Makefile.local
