@@ -19,7 +19,8 @@ ENV GOPATH="/go"
 ENV GOBIN="/go/bin"
 ENV PATH="/usr/bin:/bin:/usr/local/bin:/go/bin"
 
-RUN make -C $BUILD_DIR clean dep-ensure all manifests
+RUN make -C $BUILD_DIR clean deps
+RUN make -C $BUILD_DIR all manifests
 
 ####################
 # final stage

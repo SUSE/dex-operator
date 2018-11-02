@@ -7,12 +7,11 @@ project](https://github.com/golang-standards/project-layout).
 
 ## Dependencies
 
-* `dep` (will be installed automatically if not detected)
-* `go >= 1.10`
+* `go >= 1.11`
 
 ### Bumping the Kubernetes version used by `dex-operator`
 
-Update the constraints in [`Gopkg.toml`](../Gopkg.toml).
+Update the constraints in [`go.mod`](../go.mod).
 
 ## Building
 
