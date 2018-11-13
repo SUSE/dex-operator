@@ -70,6 +70,8 @@ deps: go.mod
 generate: $(DEX_OPER_GEN_SRCS)
 	@echo ">>> Getting deepcopy-gen..."
 	@$(GO_NOMOD) get k8s.io/code-generator/cmd/deepcopy-gen
+	-@$(GO_NOMOD) get k8s.io/apimachinery
+	-@$(GO_NOMOD) get golang.org/x/lint/golint
 	@echo ">>> Generating files..."
 	@$(GO) generate -x $(SOURCES_DIRS_GO)
 
