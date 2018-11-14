@@ -2,6 +2,7 @@ module github.com/kubic-project/dex-operator
 
 require (
 	cloud.google.com/go v0.30.0 // indirect
+	github.com/docker/docker v1.13.1 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-logr/logr v0.1.0 // indirect
 	github.com/go-logr/zapr v0.1.0 // indirect
@@ -44,17 +45,19 @@ require (
 	golang.org/x/tools v0.0.0-20181010152903-65a9b9c4aba0 // indirect
 	google.golang.org/appengine v1.2.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
-	k8s.io/api v0.0.0-20180712090710-2d6f90ab1293
+	k8s.io/api v0.0.0-20181110191121-a33c8200050f
 	k8s.io/apiextensions-apiserver v0.0.0-20180808065829-408db4a50408 // indirect
-	k8s.io/apimachinery v0.0.0-20180621070125-103fd098999d
-	k8s.io/apiserver v0.0.0-20180808060109-1844acd6a035
-	k8s.io/client-go v0.0.0-20180806134042-1f13a808da65
+	k8s.io/apimachinery v0.0.0-20181110190943-2a7c93004028
+	k8s.io/apiserver v0.0.0-20181113231642-cf5eff4f5e8f
+	k8s.io/client-go v9.0.0+incompatible
 	k8s.io/code-generator v0.0.0-20181009084210-b36598f30652 // indirect
 	k8s.io/gengo v0.0.0-20180813235010-4242d8e6c5db // indirect
+	k8s.io/klog v0.1.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20180928202339-9dfdf9be683f // indirect
 	k8s.io/kubernetes v1.11.3
 	k8s.io/utils v0.0.0-20180918230422-cd34563cd63c // indirect
 	sigs.k8s.io/controller-runtime v0.1.4
 	sigs.k8s.io/controller-tools v0.1.6 // indirect
 	sigs.k8s.io/testing_frameworks v0.0.0-20180709092217-5818a3a284a1 // indirect
+	sigs.k8s.io/yaml v1.1.0 // indirect
 )
