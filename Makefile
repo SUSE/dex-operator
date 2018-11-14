@@ -68,10 +68,12 @@ deps: go.mod
 	@$(GO) mod download
 
 generate: $(DEX_OPER_GEN_SRCS)
+	@[ -n "${GOPATH}" ]     || ( echo "GOPATH not defined" ; exit 1 ; )
+	@[ -d "${GOPATH}/bin" ] || ( echo "${GOPATH}/bin does not exist" ; exit 1 ; )
 	@echo ">>> Getting deepcopy-gen..."
-	@$(GO_NOMOD) get k8s.io/code-generator/cmd/deepcopy-gen
-	-@$(GO_NOMOD) get k8s.io/apimachinery
-	-@$(GO_NOMOD) get golang.org/x/lint/golint
+	-@$(GO_NOMOD) get -u k8s.io/code-generator/cmd/deepcopy-gen
+	-@$(GO_NOMOD) get -u k8s.io/apimachinery
+	-@$(GO_NOMOD) get -u golang.org/x/lint/golint
 	@echo ">>> Generating files..."
 	@$(GO) generate -x $(SOURCES_DIRS_GO)
 
