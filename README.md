@@ -25,6 +25,8 @@ Before we have a functional POC we need to implement:
 
 # Quick start
 
+We support currently the DEV workflow with $GOPATH only. ( you need to dev in your $GOPATH)
+
 * you must add the following flags to your API server configuration
 (see [Dex's documentation](https://github.com/dexidp/dex/blob/master/Documentation/kubernetes.md#configuring-the-openid-connect-plugin)
 for more details):
