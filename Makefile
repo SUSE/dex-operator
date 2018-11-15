@@ -1,6 +1,6 @@
 SOURCES_DIRS      = cmd pkg
 SOURCES_DIRS_GO   = ./pkg/... ./cmd/...
-SOURCES_APIPS_DIR = ./pkg/apis/kubic
+SOURCES_API_DIR = ./pkg/apis/kubic
 
 GO         := GO111MODULE=on GO15VENDOREXPERIMENT=1 go
 GO_NOMOD   := GO111MODULE=off go
@@ -10,8 +10,8 @@ GO_VERSION := $(shell $(GO) version | sed -e 's/^[^0-9.]*\([0-9.]*\).*/\1/')
 DEX_OPER_SRCS      = $(shell find $(SOURCES_DIRS) -type f -name '*.go' -not -path "*generated*")
 DEX_OPER_MAIN_SRCS = $(shell find $(SOURCES_DIRS) -type f -name '*.go' -not -path "*_test.go")
 
-DEX_OPER_GEN_SRCS       = $(shell grep -l -r "//go:generate" $(SOURCES_DIRS))
-DEX_OPER_CRD_TYPES_SRCS = $(shell find $(SOURCES_APIPS_DIR) -type f -name "*_types.go")
+DEX_OPER_GEN_SRCS       = $(shell grep -l -r "//go:generate" $(SOURCES_DIRS) 2>/dev/null)
+DEX_OPER_CRD_TYPES_SRCS = $(shell find $(SOURCES_API_DIR) -type f -name "*_types.go")
 
 DEX_OPER_EXE  = cmd/dex-operator/dex-operator
 DEX_OPER_MAIN = cmd/dex-operator/main.go
@@ -63,13 +63,19 @@ CONTAINER_VOLUMES = \
 
 all: $(DEX_OPER_EXE)
 
-deps: go.mod
-	@echo ">>> Checking vendored deps..."
-	@$(GO) mod download
+$(DEEPCOPY_DEPS):
+	@[ -n "${GOPATH}" ]     || ( echo "GOPATH not defined" ; exit 1 ; )
+	@[ -d "${GOPATH}/bin" ] || ( echo "${GOPATH}/bin does not exist" ; exit 1 ; )
+	@echo ">>> Getting deepcopy dependencies..."
+	-@$(GO_NOMOD) get -u k8s.io/apimachinery
+	-@$(GO_NOMOD) get -u k8s.io/api
 
-generate: $(DEX_OPER_GEN_SRCS)
-	@echo ">>> Getting deepcopy-gen..."
-	@$(GO_NOMOD) get k8s.io/code-generator/cmd/deepcopy-gen
+# NOTE: deepcopy-gen doesn't support go1.11's modules, so we must 'go get' it
+$(DEEPCOPY_GENERATOR): $(DEEPCOPY_DEPS)
+	@echo ">>> Getting deepcopy-gen (for $(DEEPCOPY_GENERATOR))"
+	-@$(GO_NOMOD) get -u k8s.io/code-generator/cmd/deepcopy-gen
+
+generate: $(DEEPCOPY_GENERATOR) $(DEX_OPER_GEN_SRCS)
 	@echo ">>> Generating files..."
 	@$(GO) generate -x $(SOURCES_DIRS_GO)
 
@@ -118,7 +124,7 @@ $(DEX_DEPLOY): kustomize-exe manifests-crd
 # Generate manifests e.g. CRD, RBAC etc.
 manifests: $(DEX_DEPLOY)
 
-$(DEX_OPER_EXE): $(DEX_OPER_MAIN_SRCS) deps generate
+$(DEX_OPER_EXE): $(DEX_OPER_MAIN_SRCS) generate
 	@echo ">>> Building $(DEX_OPER_EXE)..."
 	$(GO) build $(DEX_OPER_LDFLAGS) -o $(DEX_OPER_EXE) $(DEX_OPER_MAIN)
 
@@ -215,8 +221,9 @@ $(IMAGE_TAR_GZ):
 
 docker-image: $(IMAGE_TAR_GZ)
 docker-image-clean:
+	-[ -f $(IMAGE_NAME) ] && docker rmi $(IMAGE_NAME)
 	rm -f $(IMAGE_TAR_GZ)
-	-docker rmi $(IMAGE_NAME)
+
 
 
 #############################################################
