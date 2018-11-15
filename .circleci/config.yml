@@ -1,0 +1,36 @@
+version: 2
+jobs: 
+  build: 
+    docker:
+      # TODO: update the image to be stable
+      # CircleCI Go images available at: https://hub.docker.com/r/circleci/golang/
+      - image: circleci/golang
+
+        # directory where steps are run. Path must conform to the Go Workspace requirements
+    working_directory: /go/src/github.com/kubic-project/dex-operator
+
+    environment: # environment variables for the build itself
+      TEST_RESULTS: /tmp/test-results # path to where test results will be saved
+
+    steps: # steps that comprise the `build` job
+      - checkout # check out source code to working directory
+      - run: mkdir -p $TEST_RESULTS # create the test results directory
+   
+      - run: | 
+              make
+
+      - run:
+          name: Check golang style with gofmt, go vet and golint
+          command: make check 
+
+      - run:
+          name: Run unit-tests
+          command: |
+            make test 
+
+      - store_artifacts: # Upload test summary for display in Artifacts
+          path: /tmp/test-results
+          destination: raw-test-output
+
+      - store_test_results: # Upload test results for display in Test Summary
+          path: /tmp/test-results
