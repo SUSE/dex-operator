@@ -1,6 +1,8 @@
-
 # the main binary
 cmd/dex-operator/dex-operator
+
+# code coverage
+cover.out
 
 # images
 *dex-operator-latest.tar.gz

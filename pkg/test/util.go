@@ -15,22 +15,16 @@
  *
  */
 
-package crypto
+package test
 
 import (
 	"testing"
 )
 
-func TestNewSharedPassword(t *testing.T) {
-	password1 := NewSharedPassword("my-password1", "my-namespace")
-	password1.Rand(10)
-	if password1.Name != "my-namespace/my-password1" {
-		t.Fatalf("Unexpected password name: %s", password1.Name)
-	}
-
-	password2 := NewSharedPassword("my-password2", "")
-	password2.Rand(10)
-	if password2.Name != "kube-system/my-password2" {
-		t.Fatalf("Unexpected password name: %s", password2.Name)
+// SkipIfNotIntegrationTesting should skip this specific test if we are not running in integration
+// testing mode
+func SkipIfNotIntegrationTesting(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration tests in short mode")
 	}
 }
