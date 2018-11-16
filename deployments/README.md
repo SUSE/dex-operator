@@ -1,10 +1,22 @@
-# `kubic-init` deployments
+# `dex-operator` deployment
 
-IaaS, PaaS, system and container orchestration deployment configurations and
-templates (`terraform`).
+This folder contains a all-in-one manifest file that you can use in order to deploy the `dex`
+operator in your cluster.
 
-Several deployments:
+You can deploy it in your cluster with the following command:
 
-* A complete cluster with all the nodes running the `kubic-init` container ([`tf-libvirt-full`](tf-libvirt-full)).
-* A seeder-only cluster with the node running the `kubic-init` container ([`tf-libvirt-full`](tf-libvirt-full) with `nodes_count = 0`).
-* A only-nodes cluster ([`tf-libvirt-nodes`](tf-libvirt-nodes)), using the localhost as the seeder.
+```
+# kubectl apply -f https://raw.githubusercontent.com/kubic-project/dex-operator/master/deployments/dex-operator-full.yaml
+```
+
+This all-in-one manifest will create the `dex-controller` service account inside the `kube-system`
+namespace, the `dex-operator` related CRD's and the dex operator manager as a stateful set.
+
+## Updating the `dex-operator` all-in-one manifest
+
+If you have performed any changes that could have visibility in the all-in-one manifest, you need
+to regenerate it. In order to do this, you have to run:
+
+```
+# make manifests
+```

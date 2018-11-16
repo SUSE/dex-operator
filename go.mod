@@ -44,7 +44,7 @@ require (
 	golang.org/x/tools v0.0.0-20181010152903-65a9b9c4aba0 // indirect
 	google.golang.org/appengine v1.2.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
-	k8s.io/api v0.0.0-20180712090710-2d6f90ab1293
+	k8s.io/api v0.0.0-20181117111259-46ad728b8d13
 	k8s.io/apiextensions-apiserver v0.0.0-20180808065829-408db4a50408 // indirect
 	k8s.io/apimachinery v0.0.0-20180621070125-103fd098999d
 	k8s.io/apiserver v0.0.0-20180808060109-1844acd6a035
