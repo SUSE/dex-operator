@@ -15,18 +15,27 @@ jobs:
     steps: # steps that comprise the `build` job
       - checkout # check out source code to working directory
       - run: mkdir -p $TEST_RESULTS # create the test results directory
-   
-      - run: | 
-              make
+
+      - restore_cache: # restores saved cache if no changes are detected since last run
+          keys:
+            - v2-pkg-cache
+
+      - run:
+          name: Build project
+          command: make
 
       - run:
           name: Check golang style with gofmt, go vet and golint
-          command: make check 
+          command: make check
 
       - run:
-          name: Run unit-tests
-          command: |
-            make test 
+          name: Run unit tests
+          command: make test
+
+      - save_cache: # Store cache in the /go/pkg directory
+          key: v2-pkg-cache
+          paths:
+            - /go/pkg
 
       - store_artifacts: # Upload test summary for display in Artifacts
           path: /tmp/test-results

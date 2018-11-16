@@ -18,13 +18,21 @@
 package test
 
 import (
+	"flag"
 	"testing"
 )
 
-// SkipIfNotIntegrationTesting should skip this specific test if we are not running in integration
+// SkipUnlessIntegrationTesting should skip this specific test if we are not running in integration
 // testing mode
-func SkipIfNotIntegrationTesting(t *testing.T) {
+func SkipUnlessIntegrationTesting(t *testing.T) {
 	if testing.Short() {
-		t.Skip("Skipping integration tests in short mode")
+		t.SkipNow()
 	}
+}
+
+// ShouldRunIntegrationSetupAndTeardown should skip this specific test if we are not running in
+// integration testing mode
+func ShouldRunIntegrationSetupAndTeardown(m *testing.M) bool {
+	flag.Parse()
+	return !testing.Short()
 }

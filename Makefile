@@ -137,15 +137,18 @@ fmt: $(DEX_OPER_SRCS)
 simplify:
 	@gofmt -s -l -w $(DEX_OPER_SRCS)
 
+.PHONY: golint
+golint:
+	-@$(GO_NOMOD) get -u golang.org/x/lint/golint
+
 .PHONY: check
-check:
-	@test -z $(shell gofmt -l $(DEX_OPER_MAIN) | tee /dev/stderr) || echo "[WARN] Fix formatting issues with 'make fmt'"
+check: fmt golint
 	@for d in $$($(GO) list ./... | grep -v /vendor/); do golint $${d}; done
 	@$(GO) tool vet ${DEX_OPER_SRCS}
 
 .PHONY: test
 test:
-	@$(GO) test -short -v $(SOURCES_DIRS_GO) -coverprofile cover.out
+	@$(GO) test -race -short -v $(SOURCES_DIRS_GO) -coverprofile cover.out
 
 .PHONY: integration
 integration:
