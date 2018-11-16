@@ -24,9 +24,13 @@ import (
 	"golang.org/x/net/context"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+
+	"github.com/kubic-project/dex-operator/pkg/test"
 )
 
 func TestStorageDexConfiguration(t *testing.T) {
+	test.SkipIfNotIntegrationTesting(t)
+
 	key := types.NamespacedName{
 		Name: "foo",
 	}

@@ -145,7 +145,11 @@ check:
 
 .PHONY: test
 test:
-	@$(GO) test -v $(SOURCE_DIRS_GO) -coverprofile cover.out
+	@$(GO) test -short -v $(SOURCES_DIRS_GO) -coverprofile cover.out
+
+.PHONY: integration
+integration:
+	@$(GO) test -v $(SOURCES_DIRS_GO) -coverprofile cover.out
 
 .PHONY: check
 clean: docker-image-clean

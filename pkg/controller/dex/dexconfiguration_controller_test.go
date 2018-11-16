@@ -32,7 +32,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	kubicv1beta1 "github.com/kubic-project/dex-operator/pkg/apis/kubic/v1beta1"
-	"github.com/kubic-project/dex-operator/pkg/config"
+	"github.com/kubic-project/dex-operator/pkg/test"
 )
 
 var c client.Client
@@ -43,6 +43,8 @@ var depKey = types.NamespacedName{Name: "foo-deployment", Namespace: "default"}
 const timeout = time.Second * 5
 
 func TestReconcile(t *testing.T) {
+	test.SkipIfNotIntegrationTesting(t)
+
 	g := gomega.NewGomegaWithT(t)
 	instance := &kubicv1beta1.DexConfiguration{ObjectMeta: metav1.ObjectMeta{Name: "foo"}}
 
@@ -52,9 +54,7 @@ func TestReconcile(t *testing.T) {
 	g.Expect(err).NotTo(gomega.HaveOccurred())
 	c = mgr.GetClient()
 
-	kubicCfg := config.KubicInitConfiguration{}
-
-	recFn, requests := SetupTestReconcile(newReconciler(mgr, &kubicCfg))
+	recFn, requests := SetupTestReconcile(newReconciler(mgr))
 	g.Expect(add(mgr, recFn)).NotTo(gomega.HaveOccurred())
 	defer close(StartTestManager(mgr, g))
 
