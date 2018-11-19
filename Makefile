@@ -1,5 +1,5 @@
-SOURCES_DIRS      = cmd pkg
-SOURCES_DIRS_GO   = ./pkg/... ./cmd/...
+SOURCES_DIRS    = cmd pkg
+SOURCES_DIRS_GO = ./pkg/... ./cmd/...
 SOURCES_API_DIR = ./pkg/apis/kubic
 
 GO         := GO111MODULE=on GO15VENDOREXPERIMENT=1 go
@@ -70,12 +70,7 @@ $(DEEPCOPY_DEPS):
 	-@$(GO_NOMOD) get -u k8s.io/apimachinery
 	-@$(GO_NOMOD) get -u k8s.io/api
 
-# NOTE: deepcopy-gen doesn't support go1.11's modules, so we must 'go get' it
-$(DEEPCOPY_GENERATOR): $(DEEPCOPY_DEPS)
-	@echo ">>> Getting deepcopy-gen (for $(DEEPCOPY_GENERATOR))"
-	-@$(GO_NOMOD) get -u k8s.io/code-generator/cmd/deepcopy-gen
-
-generate: $(DEEPCOPY_GENERATOR) $(DEX_OPER_GEN_SRCS)
+generate: $(DEX_OPER_GEN_SRCS)
 	@echo ">>> Generating files..."
 	@$(GO) generate -x $(SOURCES_DIRS_GO)
 
@@ -137,15 +132,18 @@ fmt: $(DEX_OPER_SRCS)
 simplify:
 	@gofmt -s -l -w $(DEX_OPER_SRCS)
 
+.PHONY: golint
+golint:
+	-@$(GO_NOMOD) get -u golang.org/x/lint/golint
+
 .PHONY: check
-check:
-	@test -z $(shell gofmt -l $(DEX_OPER_MAIN) | tee /dev/stderr) || echo "[WARN] Fix formatting issues with 'make fmt'"
+check: fmt golint
 	@for d in $$($(GO) list ./... | grep -v /vendor/); do golint $${d}; done
 	@$(GO) tool vet ${DEX_OPER_SRCS}
 
 .PHONY: test
 test:
-	@$(GO) test -short -v $(SOURCES_DIRS_GO) -coverprofile cover.out
+	@$(GO) test -race -short -v $(SOURCES_DIRS_GO) -coverprofile cover.out
 
 .PHONY: integration
 integration:

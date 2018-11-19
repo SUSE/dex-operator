@@ -27,34 +27,40 @@ import (
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
+
+	"github.com/kubic-project/dex-operator/pkg/test"
 )
 
 var cfg *rest.Config
 var c client.Client
 
 func TestMain(m *testing.M) {
-	if testing.Short() {
-		return
-	}
+	var t *envtest.Environment
 
-	t := &envtest.Environment{
-		CRDDirectoryPaths: []string{filepath.Join("..", "..", "..", "..", "configs", "crds")},
-	}
+	if test.ShouldRunIntegrationSetupAndTeardown(m) {
+		t = &envtest.Environment{
+			CRDDirectoryPaths: []string{filepath.Join("..", "..", "..", "..", "configs", "crds")},
+		}
 
-	err := SchemeBuilder.AddToScheme(scheme.Scheme)
-	if err != nil {
-		log.Fatal(err)
-	}
+		err := SchemeBuilder.AddToScheme(scheme.Scheme)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	if cfg, err = t.Start(); err != nil {
-		log.Fatal(err)
-	}
+		if cfg, err = t.Start(); err != nil {
+			log.Fatal(err)
+		}
 
-	if c, err = client.New(cfg, client.Options{Scheme: scheme.Scheme}); err != nil {
-		log.Fatal(err)
+		if c, err = client.New(cfg, client.Options{Scheme: scheme.Scheme}); err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	code := m.Run()
-	t.Stop()
+
+	if test.ShouldRunIntegrationSetupAndTeardown(m) {
+		t.Stop()
+	}
+
 	os.Exit(code)
 }

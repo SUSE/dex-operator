@@ -43,7 +43,7 @@ var depKey = types.NamespacedName{Name: "foo-deployment", Namespace: "default"}
 const timeout = time.Second * 5
 
 func TestReconcile(t *testing.T) {
-	test.SkipIfNotIntegrationTesting(t)
+	test.SkipUnlessIntegrationTesting(t)
 
 	g := gomega.NewGomegaWithT(t)
 	instance := &kubicv1beta1.DexConfiguration{ObjectMeta: metav1.ObjectMeta{Name: "foo"}}

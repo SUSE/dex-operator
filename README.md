@@ -1,4 +1,9 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/kubic-project/dex-operator)](https://goreportcard.com/report/github.com/kubic-project/dex-operator)
+[![CircleCI](https://circleci.com/gh/kubic-project/dex-operator/tree/master.svg?style=svg)](https://circleci.com/gh/kubic-project/dex-operator/tree/master)
+
+
 # Description
+
 
 A Dex operator for Kubernetes, developed inside the
 [Kubic](https://en.opensuse.org/Portal:Kubic) project.
@@ -24,6 +29,7 @@ Before we have a functional POC we need to implement:
 * [ ] Support more connectors
 
 # Quick start
+We support currently the DEV workflow with $GOPATH only. ( you need to dev in your $GOPATH)
 
 * you must add the following flags to your API server configuration
 (see [Dex's documentation](https://github.com/dexidp/dex/blob/master/Documentation/kubernetes.md#configuring-the-openid-connect-plugin)

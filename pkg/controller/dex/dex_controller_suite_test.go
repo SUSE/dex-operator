@@ -23,34 +23,40 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/kubic-project/dex-operator/pkg/apis"
 	"github.com/onsi/gomega"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+
+	"github.com/kubic-project/dex-operator/pkg/apis"
+	"github.com/kubic-project/dex-operator/pkg/test"
 )
 
 var cfg *rest.Config
 
 func TestMain(m *testing.M) {
-	if testing.Short() {
-		return
-	}
+	var t *envtest.Environment
 
-	t := &envtest.Environment{
-		CRDDirectoryPaths: []string{filepath.Join("..", "..", "..", "config", "crds")},
-	}
-	apis.AddToScheme(scheme.Scheme)
+	if test.ShouldRunIntegrationSetupAndTeardown(m) {
+		t = &envtest.Environment{
+			CRDDirectoryPaths: []string{filepath.Join("..", "..", "..", "config", "crds")},
+		}
+		apis.AddToScheme(scheme.Scheme)
 
-	var err error
-	if cfg, err = t.Start(); err != nil {
-		log.Fatal(err)
+		var err error
+		if cfg, err = t.Start(); err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	code := m.Run()
-	t.Stop()
+
+	if test.ShouldRunIntegrationSetupAndTeardown(m) {
+		t.Stop()
+	}
+
 	os.Exit(code)
 }
 

@@ -29,7 +29,7 @@ import (
 )
 
 func TestStorageDexConfiguration(t *testing.T) {
-	test.SkipIfNotIntegrationTesting(t)
+	test.SkipUnlessIntegrationTesting(t)
 
 	key := types.NamespacedName{
 		Name: "foo",

@@ -15,6 +15,9 @@
  *
  */
 
+// Generate deepcopy for apis
+//go:generate sh -c "GO111MODULE=on go run k8s.io/code-generator/cmd/deepcopy-gen -O zz_generated.deepcopy -i ./... -h ../../hack/boilerplate.go.txt"
+
 // Package apis contains Kubernetes API groups.
 package apis
 
