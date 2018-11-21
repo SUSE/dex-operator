@@ -24,6 +24,13 @@ jobs:
           name: Build project
           command: make
 
+      - setup_remote_docker:
+          docker_layer_caching: true
+
+      - run:
+          name: Build the Docker image
+          command: make clean docker-image
+
       - run:
           name: Check golang style with gofmt, go vet and golint
           command: make check
