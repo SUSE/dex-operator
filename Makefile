@@ -107,7 +107,7 @@ integration: controller-gen
 
 .PHONY: check
 clean: docker-image-clean
-	rm -f $(DEX_OPER_EXE)
+	rm -f $(DEX_OPER_EXE) go.sum
 
 #############################################################
 # Some simple run targets
