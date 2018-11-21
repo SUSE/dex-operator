@@ -8,15 +8,10 @@ cover.out
 *dex-operator-latest.tar.gz
 
 # vendored deps, IDEs and other dirs
-vendor/
-.idea
-
-robots.txt*
+!vendor/**/zz_generated.*
 
 # generated files
 *deepcopy.go
 *generated.go
-# config/rbac/*.yaml
-config/crds/*.yaml
 
 Makefile.local

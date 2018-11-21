@@ -39,7 +39,7 @@ func TestMain(m *testing.M) {
 
 	if test.ShouldRunIntegrationSetupAndTeardown(m) {
 		t = &envtest.Environment{
-			CRDDirectoryPaths: []string{filepath.Join("..", "..", "..", "..", "configs", "crds")},
+			CRDDirectoryPaths: []string{filepath.Join("..", "..", "..", "..", "config", "crds")},
 		}
 
 		err := SchemeBuilder.AddToScheme(scheme.Scheme)

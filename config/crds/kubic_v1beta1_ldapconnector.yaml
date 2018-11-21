@@ -1,0 +1,78 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  creationTimestamp: null
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: ldapconnectors.kubic.opensuse.org
+spec:
+  group: kubic.opensuse.org
+  names:
+    kind: LDAPConnector
+    plural: ldapconnectors
+  scope: Cluster
+  validation:
+    openAPIV3Schema:
+      properties:
+        apiVersion:
+          type: string
+        kind:
+          type: string
+        metadata:
+          type: object
+        spec:
+          properties:
+            bindDn:
+              type: string
+            bindPw:
+              type: string
+            group:
+              properties:
+                baseDn:
+                  type: string
+                filter:
+                  type: string
+                groupAttr:
+                  type: string
+                nameAttr:
+                  type: string
+                userAttr:
+                  type: string
+              type: object
+            id:
+              type: string
+            name:
+              type: string
+            rootCAData:
+              type: string
+            server:
+              type: string
+            startTLS:
+              type: boolean
+            user:
+              properties:
+                baseDn:
+                  type: string
+                emailAttr:
+                  type: string
+                filter:
+                  type: string
+                idAttr:
+                  type: string
+                nameAttr:
+                  type: string
+                username:
+                  type: string
+              type: object
+            usernamePrompt:
+              type: string
+          type: object
+        status:
+          type: object
+  version: v1beta1
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

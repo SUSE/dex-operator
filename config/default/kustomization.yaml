@@ -18,8 +18,7 @@ namePrefix: dex-operator
 # YAML string, with resources separated by document
 # markers ("---").
 resources:
-#- ../rbac/rbac_role.yaml
-- ../rbac/rbac_role_binding.yaml
+- ./rbac/admin_role_binding.yaml
 - ../manager/manager.yaml
 
 #patches:
