@@ -1,29 +1,49 @@
-version: 2
-jobs: 
-  build: 
-    docker:
-      # TODO: update the image to be stable
-      # CircleCI Go images available at: https://hub.docker.com/r/circleci/golang/
-      - image: circleci/golang
+# Note that the following stanza uses CircleCI 2.1 to make use of a Reusable Executor
+# This allows defining a docker image to reuse across jobs.
+# visit https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-executors to learn more.
 
-        # directory where steps are run. Path must conform to the Go Workspace requirements
+version: 2.1
+
+# ****** High-level description: *********
+# 
+# 1) We can have differents executors. at moment we need only golang one. Each worker can be a diff docker container or other resource type. (see upstream doc)
+#
+# 2) The first part jobs is just what this jobs/task execute.
+#
+# 3) At the end you have the workflow which allow us to define parallelism and dependencies between jobs/tasks
+
+executors:
+  golang-executor:
+    docker:
+      - image: circleci/golang
     working_directory: /go/src/github.com/kubic-project/dex-operator
 
-    environment: # environment variables for the build itself
-      TEST_RESULTS: /tmp/test-results # path to where test results will be saved
-
-    steps: # steps that comprise the `build` job
-      - checkout # check out source code to working directory
-      - run: mkdir -p $TEST_RESULTS # create the test results directory
-
-      - restore_cache: # restores saved cache if no changes are detected since last run
+jobs:
+  build-and-run-unit-tests:
+    executor: golang-executor
+    steps:
+      - checkout
+      - restore_cache:
           keys:
-            - v2-pkg-cache
+            - golang-pkg-cache
 
       - run:
-          name: Build project
+          name: Build project from src
           command: make
+ 
+      - save_cache:
+          key: v2-pkg-cache
+          paths:
+            - /go/pkg
 
+      - run:
+          name: Execute unit-tests
+          command: make test
+
+  build-docker-image:
+    executor: golang-executor
+    steps:
+      - checkout
       - setup_remote_docker:
           docker_layer_caching: true
 
@@ -31,22 +51,20 @@ jobs:
           name: Build the Docker image
           command: make clean docker-image
 
+  tests-lint:
+    executor: golang-executor
+    steps:
+      - checkout
       - run:
-          name: Check golang style with gofmt, go vet and golint
+          name: Execute lint tests
           command: make check
 
-      - run:
-          name: Run unit tests
-          command: make test
+# main scheduler. the job run in parallel, but we can manage requirements.
+workflows:
+  version: 2.1
 
-      - save_cache: # Store cache in the /go/pkg directory
-          key: v2-pkg-cache
-          paths:
-            - /go/pkg
-
-      - store_artifacts: # Upload test summary for display in Artifacts
-          path: /tmp/test-results
-          destination: raw-test-output
-
-      - store_test_results: # Upload test results for display in Test Summary
-          path: /tmp/test-results
+  kubic:
+    jobs:
+      - build-and-run-unit-tests
+      - build-docker-image
+      - tests-lint
