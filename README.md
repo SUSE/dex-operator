@@ -1,9 +1,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/kubic-project/dex-operator)](https://goreportcard.com/report/github.com/kubic-project/dex-operator)
 [![CircleCI](https://circleci.com/gh/kubic-project/dex-operator/tree/master.svg?style=svg)](https://circleci.com/gh/kubic-project/dex-operator/tree/master)
 
-
 # Description
-
 
 A Dex operator for Kubernetes, developed inside the
 [Kubic](https://en.opensuse.org/Portal:Kubic) project.
@@ -12,11 +10,11 @@ A Dex operator for Kubernetes, developed inside the
 
 * Automatic (re)configuration of a Dex instance with
 some [CRD](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/)s.
-* Atomatic deployment/re-deployment/stop of the Dex instance
+* Automatic deployment/re-deployment/stop of the Dex instance
 depending on the current number of LDAP connectors.
 * Automatic certificate management: the dex-operator will create
 a certificate and get it signed from the API server for you.
- 
+
 # Current status
 
 **Alpha**: we are still adding features and fixing many bugs...
@@ -29,9 +27,8 @@ Before we have a functional POC we need to implement:
 * [ ] Support more connectors
 
 # Quick start
-We support currently the DEV workflow with $GOPATH only. ( you need to dev in your $GOPATH)
 
-* you must add the following flags to your API server configuration
+* You must add the following flags to your API server configuration
 (see [Dex's documentation](https://github.com/dexidp/dex/blob/master/Documentation/kubernetes.md#configuring-the-openid-connect-plugin)
 for more details):
 
@@ -46,19 +43,19 @@ for more details):
     ```
 
     where:
-    
+
     * `/etc/kubernetes/pki/ca.crt` is the CA certificate used by your API server.
     * `https://server.my-company.com:32000` is the issuer URL
-    * `email` is the `nameAttr` used we will specify in the `LDAPConnector`,so Kubernetes RBAC will use it for authorizing users based on their `email`.
+    * `email` is the `nameAttr` used we will specify in the `LDAPConnector`, so Kubernetes RBAC will use it for authorizing users based on their `email`.
 
-* restart the API server
-* load the Dex operator
+* Restart the API server
+* Load the Dex operator
 
     ```
     kubectl apply -f https://raw.githubusercontent.com/kubic-project/dex-operator/master/deployments/dex-operator-full.yaml
     ```
-    
-* once the operator is running, create a `DexConfiguration` object like this:
+
+* Once the operator is running, create a `DexConfiguration` object like this:
 
     ```yaml
     # my-dex-config.yaml
@@ -74,17 +71,17 @@ for more details):
       names:
         - server.my-company.com
         # any extra names here will be added to the certificates
-    ``` 
+    ```
 
     some important things:
-    
+
     * the `DexConfiguration` name **must be** `dex-configuration` (otherwise it will be ignored).
     * the name and port in `https://server.my-company.com:32000` must match an entry in
-    the `names` and `nodePort` attributes. 
-    
+    the `names` and `nodePort` attributes.
+
     then you can load it with `kubectl apply -f my-dex-config.yaml`.
 
-* add some LDAP connectors like this:
+* Add some LDAP connectors like this:
 
     ```yaml
     # my-connector.yaml
@@ -114,23 +111,23 @@ for more details):
         groupAttr: uniqueMember
     ```
 
-    After loading the `LDAPConnector`  with `kubectl apply -f my-connector.yaml`,
+    After loading the `LDAPConnector` with `kubectl apply -f my-connector.yaml`,
     a Dex `Deployment` should be launched automatically by the Dex operator:
-    
+
     ```bash
     $ kubectl get deployment --all-namespaces                                                                                                dex_controller ✱ ◼
     NAMESPACE     NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
     kube-system   coredns     2         2         2            2           7m
     kube-system   kubic-dex   3         3         3            3           3m
-    
+
     ```
-    
-    You can check  the current status of the `DexConfiguration` by _"describing"_ it:
-     
+
+    You can check the current status of the `DexConfiguration` by _"describing"_ it:
+
     ```bash
     $ kubectl describe dexconfiguration main-configuration                                                                                   dex_controller ✱ ◼
     Name:         main-configuration
-    Namespace:    
+    Namespace:
     Labels:       controller-tools.k8s.io=1.0
     Annotations:  kubectl.kubernetes.io/last-applied-configuration={"apiVersion":"kubic.opensuse.org/v1beta1","kind":"DexConfiguration","metadata":{"annotations":{},"labels":{"controller-tools.k8s.io":"1.0"},"name":"ma...
     API Version:  kubic.opensuse.org/v1beta1
@@ -176,22 +173,20 @@ for more details):
       Normal  Deploying  2m    DexController  Deployment 'kubic-dex' created for 'main-configuration'
     ```
 
-Dex will be dynamically reconfigured if you change any of these things, so
+Dex will be dynamically reconfigured if you change any of these resources, so
 updating the `LDAPConnector` instance or adding a new connector would result in an update
 of the `ConfigMap` and a new Dex deployment, and removing all the connectors would mean that
-the Dex deployment would be stopped. 
- 
+the Dex deployment would be stopped.
+
 # Documentation
 
 * See the [current documentation](docs/README.md) for instructions.
-
 * See the [development documentation](docs/devel.md) if you intend to contribute to this project.
-
 
 # See also
 
-* the [dex-operator image](https://hub.docker.com/r/opensuse/dex-operator/) in the Docker Hub.
-* the [kubic-init](https://github.com/kubic-project/kubic-init) container, a container for
+* The [dex-operator image](https://hub.docker.com/r/opensuse/dex-operator/) in the Docker Hub.
+* The [kubic-init](https://github.com/kubic-project/kubic-init) container, a container for
 bootstrapping a Kubernetes cluster on top of [MicroOS](https://en.opensuse.org/Kubic:MicroOS)
 (an openSUSE-Tumbleweed-based OS focused on running containers).
-* the [Kubic Project](https://en.opensuse.org/Portal:Kubic) home page.
+* The [Kubic Project](https://en.opensuse.org/Portal:Kubic) home page.
