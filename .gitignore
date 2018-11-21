@@ -14,4 +14,6 @@ cover.out
 *deepcopy.go
 *generated.go
 
+go.sum
+
 Makefile.local
