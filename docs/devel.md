@@ -38,6 +38,8 @@ Then you can visualize the profile in html format:
 
 `go tool cover -html=cover.out`
 
+or use the `make coverage` target
+
 Feel free to read more about this on : https://blog.golang.org/cover.
 
 ### Regenerating CRDs, RBAC and the deployment all-in-one manifest
