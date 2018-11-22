@@ -49,7 +49,7 @@ jobs:
 
       - run:
           name: Build the Docker image
-          command: make clean docker-image
+          command: make clean _vendor-download docker-image
 
   tests-lint:
     executor: golang-executor
