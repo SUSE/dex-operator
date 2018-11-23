@@ -105,9 +105,13 @@ test:
 integration: controller-gen
 	@$(GO) test -v $(SOURCES_DIRS_GO) -coverprofile cover.out
 
-.PHONY: check
+.PHONY: clean
 clean: docker-image-clean
 	rm -f $(DEX_OPER_EXE) go.sum
+
+.PHONY: coverage
+coverage: 
+	$(GO_NOMOD) tool cover -html=cover.out
 
 #############################################################
 # Some simple run targets
