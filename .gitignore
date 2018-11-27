@@ -10,10 +10,6 @@ cover.out
 # vendored deps, IDEs and other dirs
 !vendor/**/zz_generated.*
 
-# generated files
-*deepcopy.go
-*generated.go
-
 go.sum
 
 Makefile.local
