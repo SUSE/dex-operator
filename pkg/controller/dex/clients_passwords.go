@@ -53,7 +53,7 @@ func NewStaticClientsPasswords(prefix string, namespace string) (StaticClientsPa
 	}
 
 	sps := StaticClientsPasswords{
-		Prefix:    util.SafeId(prefix),
+		Prefix:    util.SafeID(prefix),
 		Namespace: namespace,
 		Passwords: map[string]crypto.SharedPassword{},
 	}
@@ -65,7 +65,7 @@ func NewStaticClientsPasswords(prefix string, namespace string) (StaticClientsPa
 func (scp *StaticClientsPasswords) GetOrRandomFromSecrets(cli clientset.Interface, names []string) error {
 	glog.V(8).Infof("[kubic] creating/getting %d shared passwords", len(names))
 	for _, n := range names {
-		fullName := fmt.Sprintf("%s-%s", scp.Prefix, util.SafeId(n))
+		fullName := fmt.Sprintf("%s-%s", scp.Prefix, util.SafeID(n))
 		glog.V(8).Infof("[kubic] generating/getting shared password '%s'", fullName)
 		sharedPassword := crypto.NewSharedPassword(fullName, scp.Namespace)
 		if err := sharedPassword.GetFromSecret(cli); apierrors.IsNotFound(err) {

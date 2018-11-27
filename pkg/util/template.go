@@ -68,7 +68,7 @@ func ParseTemplate(templateStr string, replacements interface{}) (string, error)
 			return URL64decode(v)
 		},
 		"safeYAMLId": func(v string) string {
-			return SafeId(v)
+			return SafeID(v)
 		},
 		"safePath": safePath,
 		"basename": func(v string) string {
