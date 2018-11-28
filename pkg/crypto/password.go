@@ -38,6 +38,7 @@ var (
 	sharedPasswordDefaultLen = 16
 )
 
+// SharedPassword type
 type SharedPassword struct {
 	Name     string // The name includes the "namespace" (ie, "kube-system/dex-velum")
 	length   int
@@ -58,6 +59,7 @@ func randStringRunes(n int) string {
 	return string(b)
 }
 
+// NewSharedPassword returns a new SharedPassword type
 func NewSharedPassword(name, namespace string) SharedPassword {
 	if len(namespace) == 0 {
 		namespace = sharedPasswordNamespace
@@ -67,6 +69,7 @@ func NewSharedPassword(name, namespace string) SharedPassword {
 	}
 }
 
+// Rand returns a new password string of random length and characters
 func (password *SharedPassword) Rand(length int) (string, error) {
 	if length == 0 {
 		length = sharedPasswordDefaultLen
@@ -75,10 +78,12 @@ func (password *SharedPassword) Rand(length int) (string, error) {
 	return password.contents, nil
 }
 
+// GetName returns the name
 func (password SharedPassword) GetName() string {
 	return util.StringToNamespacedName(password.Name).Name
 }
 
+// GetNamespace returns the namespace
 func (password SharedPassword) GetNamespace() string {
 	return util.StringToNamespacedName(password.Name).Namespace
 }
@@ -115,6 +120,7 @@ func (password *SharedPassword) GetFromSecret(cli clientset.Interface) error {
 	return nil
 }
 
+// AsSecretReference returns a SecretReference type
 func (password *SharedPassword) AsSecretReference() corev1.SecretReference {
 	return corev1.SecretReference{
 		Name:      password.GetName(),
@@ -122,6 +128,7 @@ func (password *SharedPassword) AsSecretReference() corev1.SecretReference {
 	}
 }
 
+// Delete deletes the SharedPassword
 func (password *SharedPassword) Delete(cli clientset.Interface) error {
 	err := cli.CoreV1().Secrets(password.GetNamespace()).Delete(password.GetName(), &metav1.DeleteOptions{})
 	if err != nil && !apierrors.IsNotFound(err) {
