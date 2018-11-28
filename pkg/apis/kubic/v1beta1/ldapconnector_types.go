@@ -23,7 +23,7 @@ import (
 
 // see https://github.com/dexidp/dex/blob/master/Documentation/connectors/ldap.md
 
-// User search maps a username and password entered by a user to a LDAP entry.
+// LDAPUserSpec maps a username and password entered by a user to a LDAP entry.
 type LDAPUserSpec struct {
 	// BaseDN to start the search from. It will translate to the query
 	// "(&(objectClass=person)(uid=<username>))".
@@ -40,7 +40,7 @@ type LDAPUserSpec struct {
 	// The following three fields are direct mappings of attributes on the user entry.
 
 	// String representation of the user.
-	IdAttr string `json:"idAttr,omitempty"`
+	IDAttr string `json:"idAttr,omitempty"`
 
 	// Required. Attribute to map to Email
 	EmailAttr string `json:"emailAttr,omitempty"`
@@ -50,7 +50,7 @@ type LDAPUserSpec struct {
 	NameAttr string `json:"nameAttr,omitempty"`
 }
 
-// Group search queries for groups given a user entry.
+// LDAPGroupSpec search queries for groups given a user entry.
 type LDAPGroupSpec struct {
 	// BaseDN to start the search from. It will translate to the query
 	// "(&(objectClass=group)(member=<user uid>))".
@@ -74,7 +74,7 @@ type LDAPGroupSpec struct {
 type LDAPConnectorSpec struct {
 	Name string `json:"name,omitempty"`
 
-	Id string `json:"id,omitempty"`
+	ID string `json:"id,omitempty"`
 
 	// Host and optional port of the LDAP server in the form "host:port".
 	// If the port is not supplied, it will be guessed based on "insecureNoSSL",

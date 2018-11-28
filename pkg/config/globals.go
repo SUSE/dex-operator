@@ -18,9 +18,9 @@
 package config
 
 var (
-	// A prefix for all the resources created by the operator
+	// DefaultPrefix A prefix for all the resources created by the operator
 	DefaultPrefix = "dexop"
 
-	// Default number of replicas for the Deployment
+	// DefaultDeployNumReplicas Default number of replicas for the Deployment
 	DefaultDeployNumReplicas = 3
 )

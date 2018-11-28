@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+
 package main
 
 import (
@@ -37,8 +38,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/runtime/signals"
 )
 
-// to be set from the build process
+// Version to be set from the build process
 var Version string
+
+// Build string
 var Build string
 
 // newCmdManager runs the manager

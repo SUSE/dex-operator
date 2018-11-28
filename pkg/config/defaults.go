@@ -18,19 +18,20 @@
 package config
 
 const (
+	// DefaultClusterAdminRole admin role
 	DefaultClusterAdminRole = "cluster-admin"
 )
 
 const (
-	// Configmap (in the conatiner)
+	// DefaultConfigMapFilename Configmap (in the conatiner)
 	DefaultConfigMapFilename = "/etc/dex/cfg/config.yaml"
 
-	// Default Dex port
+	// DefaultNodePort Default Dex port
 	DefaultNodePort = 32000
 
-	// Directory where certs are stored (in the container)
+	// DefaultCertsDir the directory where certs are stored (in the container)
 	DefaultCertsDir = "/etc/dex/tls"
 
-	// the length (in bytes) for random passwords
+	// DefaultSharedPasswordLen the length (in bytes) for random passwords
 	DefaultSharedPasswordLen = 16
 )

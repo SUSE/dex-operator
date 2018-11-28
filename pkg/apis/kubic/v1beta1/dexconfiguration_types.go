@@ -22,6 +22,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+// DexStaticClient struct
 type DexStaticClient struct {
 	Name string `json:"name,omitempty"`
 
@@ -65,6 +66,7 @@ type DexConfigurationSpec struct {
 	AdminGroup string `json:"adminGroup,omitempty"`
 }
 
+// DexStaticClientStatus struct
 type DexStaticClientStatus struct {
 	Name string `json:"name,omitempty"`
 

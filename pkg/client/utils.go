@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+
 package client
 
 import (
@@ -46,7 +47,7 @@ const (
 // CreateOrUpdatePod creates or updates a Pod object
 func CreateOrUpdatePod(client clientset.Interface, service *corev1.Pod) (*corev1.Pod, error) {
 	var err error
-	var existing *corev1.Pod = nil
+	var existing *corev1.Pod
 
 	existing, err = client.Core().Pods(service.GetNamespace()).Get(service.GetName(), metav1.GetOptions{})
 	if err != nil && apierrors.IsNotFound(err) {
@@ -71,7 +72,7 @@ func CreateOrUpdatePod(client clientset.Interface, service *corev1.Pod) (*corev1
 // already, this function will update the resource instead.
 func CreateOrUpdateJob(client clientset.Interface, job *batchv1.Job) (*batchv1.Job, error) {
 	var err error
-	var existing *batchv1.Job = nil
+	var existing *batchv1.Job
 
 	existing, err = client.Batch().Jobs(job.GetNamespace()).Get(job.GetName(), metav1.GetOptions{})
 	if err != nil && apierrors.IsNotFound(err) {
@@ -92,10 +93,10 @@ func CreateOrUpdateJob(client clientset.Interface, job *batchv1.Job) (*batchv1.J
 	return existing, nil
 }
 
-// CreateOrUpdateDeployment creates a Deployment if the target resource doesn't exist. If the resource exists already, this function will update the resource instead.
+// CreateOrUpdateService creates a Deployment if the target resource doesn't exist. If the resource exists already, this function will update the resource instead.
 func CreateOrUpdateService(client clientset.Interface, service *corev1.Service) (*corev1.Service, error) {
 	var err error
-	var existing *corev1.Service = nil
+	var existing *corev1.Service
 
 	existing, err = client.Core().Services(service.GetNamespace()).Get(service.GetName(), metav1.GetOptions{})
 	if err != nil && apierrors.IsNotFound(err) {
@@ -132,8 +133,9 @@ func DeleteServiceForeground(client clientset.Interface, service *corev1.Service
 	return nil
 }
 
+// CreateOrUpdateNetworkPolicy returns the NetworkPolicy
 func CreateOrUpdateNetworkPolicy(client clientset.Interface, np *netv1.NetworkPolicy) (*netv1.NetworkPolicy, error) {
-	var unp *netv1.NetworkPolicy = nil
+	var unp *netv1.NetworkPolicy
 	var err error
 
 	if unp, err = client.Networking().NetworkPolicies(np.ObjectMeta.Namespace).Create(np); err != nil {
@@ -170,7 +172,7 @@ func WaitForObject(cli rest.Interface, obj metav1.Common) error {
 	return WaitForURL(request)
 }
 
-// WaitForObject waits for an URL to be GET'able
+// WaitForURL waits for an URL to be GET'able
 func WaitForURL(request *rest.Request) error {
 	glog.V(5).Infof("[kubic] Waiting until endpoint is available...")
 	err := wait.PollImmediate(pollInterval, pollTimeout, func() (bool, error) {
