@@ -193,7 +193,7 @@ func (r *ReconcileDexConfiguration) Reconcile(request reconcile.Request) (reconc
 		return reconcile.Result{}, err
 	}
 
-	deployment, err := NewDexDeploymentFor(instance, r)
+	deployment, err := NewDeploymentFor(instance, r)
 	if err != nil {
 		return reconcile.Result{}, err
 	}
@@ -229,8 +229,8 @@ func (r *ReconcileDexConfiguration) Reconcile(request reconcile.Request) (reconc
 }
 
 // reconcileInstance reconciles an instance that must be prrsent in the cluster
-func (r *ReconcileDexConfiguration) reconcileInstance(instance *kubicv1beta1.DexConfiguration, deployment *DexDeployment,
-	configMap *DexConfigMap, staticClientPasswords StaticClientsPasswords) (reconcile.Result, error) {
+func (r *ReconcileDexConfiguration) reconcileInstance(instance *kubicv1beta1.DexConfiguration, deployment *Deployment,
+	configMap *ConfigMap, staticClientPasswords StaticClientsPasswords) (reconcile.Result, error) {
 
 	var err error
 
@@ -269,7 +269,7 @@ func (r *ReconcileDexConfiguration) reconcileInstance(instance *kubicv1beta1.Dex
 			configMap.GetName(), instance.GetName()))
 
 	// Get a valid certificate, signed by the CA, for Dex
-	certificate, err := NewDexCertificate(instance, r)
+	certificate, err := NewCertificate(instance, r)
 	if err != nil {
 		glog.V(3).Infof("[kubic] ERROR: when creating Dex certificate: %s", err)
 		return reconcile.Result{}, err
@@ -344,8 +344,8 @@ func (r *ReconcileDexConfiguration) reconcileInstance(instance *kubicv1beta1.Dex
 // are removed from the apiserver.
 // Ensure that delete implementation is idempotent and safe to invoke
 // multiple types for same object.
-func (r *ReconcileDexConfiguration) reconcileRemoval(instance *kubicv1beta1.DexConfiguration, deployment *DexDeployment,
-	configMap *DexConfigMap, staticClientsPasswords StaticClientsPasswords) error {
+func (r *ReconcileDexConfiguration) reconcileRemoval(instance *kubicv1beta1.DexConfiguration, deployment *Deployment,
+	configMap *ConfigMap, staticClientsPasswords StaticClientsPasswords) error {
 
 	var err error
 
@@ -389,7 +389,7 @@ func (r *ReconcileDexConfiguration) reconcileRemoval(instance *kubicv1beta1.DexC
 
 	// remove the certificate we have generated
 	if len(instance.Status.GeneratedCertificate.Name) > 0 {
-		cert, _ := NewDexCertificate(instance, r)
+		cert, _ := NewCertificate(instance, r)
 		if err := cert.Delete(); err != nil {
 			glog.V(5).Infof("[kubic] ERROR: removing certificate '%s' for '%s': %s",
 				cert.GetName(), instance.GetName(), err)
@@ -402,6 +402,7 @@ func (r *ReconcileDexConfiguration) reconcileRemoval(instance *kubicv1beta1.DexC
 	return nil
 }
 
+// ObjectVisitor interface
 type ObjectVisitor interface {
 	GetObject() metav1.Object
 }

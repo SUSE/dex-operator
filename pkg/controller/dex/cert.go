@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+
 package dex
 
 import (
@@ -33,7 +34,8 @@ import (
 	dexnet "github.com/kubic-project/dex-operator/pkg/net"
 )
 
-type DexCertificate struct {
+// Certificate struct
+type Certificate struct {
 	instance *kubicv1beta1.DexConfiguration
 
 	existing   *corev1.Secret
@@ -41,8 +43,9 @@ type DexCertificate struct {
 	reconciler *ReconcileDexConfiguration
 }
 
-func NewDexCertificate(instance *kubicv1beta1.DexConfiguration, reconciler *ReconcileDexConfiguration) (*DexCertificate, error) {
-	cert := &DexCertificate{
+// NewCertificate returns a new *dex.Certificate struct
+func NewCertificate(instance *kubicv1beta1.DexConfiguration, reconciler *ReconcileDexConfiguration) (*Certificate, error) {
+	cert := &Certificate{
 		instance,
 		nil,
 		nil,
@@ -56,7 +59,7 @@ func NewDexCertificate(instance *kubicv1beta1.DexConfiguration, reconciler *Reco
 }
 
 // GetFrom obtains the existing cert from the GeneratedCertificate specified in the instance.Status or instance.Spec
-func (cert *DexCertificate) GetFrom(instance *kubicv1beta1.DexConfiguration) error {
+func (cert *Certificate) GetFrom(instance *kubicv1beta1.DexConfiguration) error {
 	var err error
 	var name, namespace string
 
@@ -85,11 +88,13 @@ func (cert *DexCertificate) GetFrom(instance *kubicv1beta1.DexConfiguration) err
 	return nil
 }
 
-func (cert DexCertificate) WasGenerated() bool {
+// WasGenerated checks if the cert was generated
+func (cert Certificate) WasGenerated() bool {
 	return cert.generated != nil
 }
 
-func (cert DexCertificate) GetHashRequested() string {
+// GetHashRequested get the requested hash
+func (cert Certificate) GetHashRequested() string {
 	var data []byte
 	if cert.existing != nil {
 		data = cert.existing.Data[corev1.TLSCertKey]
@@ -103,7 +108,7 @@ func (cert DexCertificate) GetHashRequested() string {
 }
 
 // CreateOrUpdate creates the Service in the apiserver, or updates an existing instance
-func (cert *DexCertificate) CreateOrUpdate(deployment *DexDeployment) error {
+func (cert *Certificate) CreateOrUpdate(deployment *Deployment) error {
 
 	// TODO: check if cert.existing is valid
 	if cert.existing != nil {
@@ -143,7 +148,8 @@ func (cert *DexCertificate) CreateOrUpdate(deployment *DexDeployment) error {
 	return nil
 }
 
-func (cert *DexCertificate) Delete() error {
+// Delete delete the cert
+func (cert *Certificate) Delete() error {
 	if cert.generated != nil {
 		err := cert.reconciler.Clientset.Core().Secrets(cert.GetNamespace()).Delete(cert.GetName(), &metav1.DeleteOptions{})
 		if err != nil && !apierrors.IsNotFound(err) {
@@ -153,32 +159,38 @@ func (cert *DexCertificate) Delete() error {
 	return nil
 }
 
-func (cert *DexCertificate) GetObject() metav1.Object {
+// GetObject returns the metav1.Object of the generated cert
+func (cert *Certificate) GetObject() metav1.Object {
 	if cert.generated != nil {
 		return cert.generated
 	}
 	return nil
 }
 
-func (cert DexCertificate) GetName() string {
+// GetName returns the cert name
+// takes the form of [DefaultPrefix]-auto-cert
+func (cert Certificate) GetName() string {
 	if cert.existing != nil {
 		return cert.existing.GetName()
 	}
 	return fmt.Sprintf("%s-auto-cert", dexcfg.DefaultPrefix)
 }
 
-func (cert DexCertificate) GetNamespace() string {
+// GetNamespace returns the namespace as a string
+func (cert Certificate) GetNamespace() string {
 	if cert.existing != nil {
 		return cert.existing.GetNamespace()
 	}
 	return metav1.NamespaceSystem
 }
 
-func (cert DexCertificate) String() string {
+// String returns the namespacedObj of the cert as a string
+func (cert Certificate) String() string {
 	return util.NamespacedObjToString(cert)
 }
 
-func (cert DexCertificate) AsSecretReference() corev1.SecretReference {
+// AsSecretReference returns a SecretReference
+func (cert Certificate) AsSecretReference() corev1.SecretReference {
 	return corev1.SecretReference{
 		cert.GetName(),
 		cert.GetNamespace(),
