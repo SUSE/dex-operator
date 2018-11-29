@@ -79,7 +79,7 @@ func NewAutoCert(ips []net.IP, names []string, name, namespace string) (*AutoCer
 	}, nil
 }
 
-// NewAutoCert creates a new automatically-signed service certificate
+// NewServiceCertFromReference creates a new automatically-signed service certificate
 func NewServiceCertFromReference(ref corev1.SecretReference) (*AutoCert, error) {
 	return &AutoCert{
 		SecretName:      ref.Name,
@@ -88,10 +88,12 @@ func NewServiceCertFromReference(ref corev1.SecretReference) (*AutoCert, error) 
 	}, nil
 }
 
+// GetName returns the AutoCert.SecretName
 func (ac AutoCert) GetName() string {
 	return ac.SecretName
 }
 
+// GetNamespace returns the AutoCert.SecretNamespace
 func (ac AutoCert) GetNamespace() string {
 	return ac.SecretNamespace
 }

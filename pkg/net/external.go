@@ -40,7 +40,7 @@ func GetPublicAPIAddress() (string, error) {
 	return localIP.String(), nil
 }
 
-// GetInternalDNSName gets a FQDN DNS name in ther internal network for `name`
+// GetServiceDNSName gets a FQDN DNS name in ther internal network for `name`
 func GetServiceDNSName(obj kubicutil.ObjNamespacer) string {
 	if len(obj.GetNamespace()) > 0 {
 		return fmt.Sprintf("%s.%s.svc.%s", obj.GetName(), obj.GetNamespace(), defaultDNSDomain)
