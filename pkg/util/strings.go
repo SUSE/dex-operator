@@ -22,17 +22,19 @@ import (
 	"strings"
 )
 
-// SafeId returns a safe ID (for example, for using in YAML)
+// SafeID returns a safe ID (for example, for using in YAML)
 // ie, "Something:6000/ddd" becomes "something-6000-ddd"
-func SafeId(s string) string {
+func SafeID(s string) string {
 	replacer := strings.NewReplacer(" ", "-", ":", "-", "/", "-", ".", "-")
 	return replacer.Replace(strings.ToLower(s))
 }
 
+// URL64encode encodes a string as a base64 string
 func URL64encode(v string) string {
 	return base64.RawURLEncoding.EncodeToString([]byte(v))
 }
 
+// URL64decode decodes a base64 string as a string
 func URL64decode(v string) string {
 	data, err := base64.RawURLEncoding.DecodeString(v)
 	if err != nil {
@@ -41,6 +43,7 @@ func URL64decode(v string) string {
 	return string(data)
 }
 
+// RemoveDuplicates removes duplicates
 func RemoveDuplicates(in []string) []string {
 	processed := map[string]struct{}{}
 

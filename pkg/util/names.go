@@ -30,6 +30,7 @@ const (
 	defaultNamespace = metav1.NamespaceSystem
 )
 
+// NewNamespacedName returns a new NamespacedName type
 func NewNamespacedName(name, namespace string) types.NamespacedName {
 	return types.NamespacedName{
 		Name:      name,
@@ -37,6 +38,7 @@ func NewNamespacedName(name, namespace string) types.NamespacedName {
 	}
 }
 
+// NamespacedNameToString returns a string containing [Namespace/Name]
 func NamespacedNameToString(ns types.NamespacedName) string {
 	if len(ns.Namespace) > 0 {
 		return fmt.Sprintf("%s/%s", ns.Namespace, ns.Name)
@@ -44,7 +46,7 @@ func NamespacedNameToString(ns types.NamespacedName) string {
 	return ns.Name
 }
 
-// ParseId parses a Kubernetes resource name as Namespace and Name
+// StringToNamespacedName parses a Kubernetes resource name as Namespace and Name
 func StringToNamespacedName(name string) types.NamespacedName {
 	nname := ""
 	nnamespace := ""
@@ -58,11 +60,13 @@ func StringToNamespacedName(name string) types.NamespacedName {
 	return types.NamespacedName{Name: nname, Namespace: nnamespace}
 }
 
+// ObjNamespacer interface
 type ObjNamespacer interface {
 	GetName() string
 	GetNamespace() string
 }
 
+// NamespacedObjToNamespacedName returns a NamespaceName created from a ObjNamesapcer
 func NamespacedObjToNamespacedName(obj ObjNamespacer) types.NamespacedName {
 	return types.NamespacedName{
 		Name:      obj.GetName(),
@@ -70,6 +74,7 @@ func NamespacedObjToNamespacedName(obj ObjNamespacer) types.NamespacedName {
 	}
 }
 
+// NamaspacedObjToMeta returns a ObjectMeta created from a ObjNamesapcer
 func NamaspacedObjToMeta(obj ObjNamespacer) metav1.ObjectMeta {
 	ns := NamespacedObjToNamespacedName(obj)
 	return metav1.ObjectMeta{
@@ -78,6 +83,7 @@ func NamaspacedObjToMeta(obj ObjNamespacer) metav1.ObjectMeta {
 	}
 }
 
+// NamespacedObjToString returns a string representation of a ObjNamespacer in the form of [Namespace/Name]
 func NamespacedObjToString(obj ObjNamespacer) string {
 	if len(obj.GetNamespace()) > 0 {
 		return fmt.Sprintf("%s/%s", obj.GetNamespace(), obj.GetName())
