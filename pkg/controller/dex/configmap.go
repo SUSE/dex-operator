@@ -41,7 +41,8 @@ import (
 	"github.com/kubic-project/dex-operator/pkg/util"
 )
 
-type DexConfigMap struct {
+// ConfigMap struct
+type ConfigMap struct {
 	instance *kubicv1beta1.DexConfiguration
 
 	FileName string
@@ -51,8 +52,9 @@ type DexConfigMap struct {
 	reconciler *ReconcileDexConfiguration
 }
 
-func NewDexConfigMapFor(instance *kubicv1beta1.DexConfiguration, reconciler *ReconcileDexConfiguration) (*DexConfigMap, error) {
-	cm := &DexConfigMap{
+// NewDexConfigMapFor returns a new dex.ConfigMap
+func NewDexConfigMapFor(instance *kubicv1beta1.DexConfiguration, reconciler *ReconcileDexConfiguration) (*ConfigMap, error) {
+	cm := &ConfigMap{
 		instance,
 		dexcfg.DefaultConfigMapFilename,
 		nil,
@@ -67,7 +69,7 @@ func NewDexConfigMapFor(instance *kubicv1beta1.DexConfiguration, reconciler *Rec
 }
 
 // GetFrom obtains the current configmap fromm the ConfigMap specified in the instance.Status
-func (config *DexConfigMap) GetFrom(instance *kubicv1beta1.DexConfiguration) error {
+func (config *ConfigMap) GetFrom(instance *kubicv1beta1.DexConfiguration) error {
 	var err error
 	var name, namespace string
 
@@ -95,7 +97,7 @@ func (config *DexConfigMap) GetFrom(instance *kubicv1beta1.DexConfiguration) err
 
 // CreateLocal generates a local ConfigMap instance. Note well that this instance is
 // not published to the apiserver: users must use `CreateOrUpdate()` for doing that.
-func (config *DexConfigMap) CreateLocal(connectors []kubicv1beta1.LDAPConnector,
+func (config *ConfigMap) CreateLocal(connectors []kubicv1beta1.LDAPConnector,
 	staticClientsPasswords StaticClientsPasswords) error {
 
 	var err error
@@ -155,7 +157,7 @@ func (config *DexConfigMap) CreateLocal(connectors []kubicv1beta1.LDAPConnector,
 
 // NeedsCreateOrUpdate returns true if the ConfigMap is not in the cluster or it needs to be updated
 // CreateLocal() must have been previously
-func (config DexConfigMap) NeedsCreateOrUpdate() bool {
+func (config ConfigMap) NeedsCreateOrUpdate() bool {
 	if config.generated == nil {
 		panic("ConfigMap has not been generated")
 	}
@@ -166,7 +168,7 @@ func (config DexConfigMap) NeedsCreateOrUpdate() bool {
 }
 
 // CreateOrUpdate creates the ConfigMap in the apiserver, or updates an existing instance
-func (config *DexConfigMap) CreateOrUpdate() error {
+func (config *ConfigMap) CreateOrUpdate() error {
 	var err error
 
 	if config.generated == nil {
@@ -194,7 +196,7 @@ func (config *DexConfigMap) CreateOrUpdate() error {
 }
 
 // GetHashGenerated returns the hash of the generated config map
-func (config DexConfigMap) GetHashGenerated() string {
+func (config ConfigMap) GetHashGenerated() string {
 	data := config.generated.BinaryData
 	name := path.Base(dexcfg.DefaultConfigMapFilename)
 
@@ -203,7 +205,7 @@ func (config DexConfigMap) GetHashGenerated() string {
 }
 
 // Delete removes the current ConfigMap
-func (config *DexConfigMap) Delete() error {
+func (config *ConfigMap) Delete() error {
 	if config.current != nil {
 		if err := config.reconciler.Delete(context.TODO(), config.current); err != nil && !apierrors.IsNotFound(err) {
 			return err
@@ -214,21 +216,25 @@ func (config *DexConfigMap) Delete() error {
 	return nil
 }
 
-func (config *DexConfigMap) GetObject() metav1.Object {
+// GetObject returns the metav1.Object generated for the dex.ConfigMap
+func (config *ConfigMap) GetObject() metav1.Object {
 	if config.generated == nil {
 		panic("needs to be generated first")
 	}
 	return config.generated
 }
 
-func (config DexConfigMap) GetName() string {
+// GetName returns the config name
+func (config ConfigMap) GetName() string {
 	return fmt.Sprintf("%s-cm", dexcfg.DefaultPrefix)
 }
 
-func (config DexConfigMap) GetNamespace() string {
+// GetNamespace returns the default namespace
+func (config ConfigMap) GetNamespace() string {
 	return dexDefaultNamespace
 }
 
-func (config DexConfigMap) String() string {
+// String returns the namespaceObj as a string
+func (config ConfigMap) String() string {
 	return util.NamespacedObjToString(config)
 }

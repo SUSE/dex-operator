@@ -36,7 +36,8 @@ import (
 	"github.com/kubic-project/dex-operator/pkg/util"
 )
 
-type DexDeployment struct {
+// Deployment struct
+type Deployment struct {
 	DexCfg *kubicv1beta1.DexConfiguration
 
 	current    *appsv1.Deployment
@@ -44,9 +45,10 @@ type DexDeployment struct {
 	reconciler *ReconcileDexConfiguration
 }
 
-func NewDexDeploymentFor(instance *kubicv1beta1.DexConfiguration, reconciler *ReconcileDexConfiguration) (*DexDeployment, error) {
+// NewDeploymentFor returns a new Deployment struct for the configuration
+func NewDeploymentFor(instance *kubicv1beta1.DexConfiguration, reconciler *ReconcileDexConfiguration) (*Deployment, error) {
 
-	deploy := &DexDeployment{
+	deploy := &Deployment{
 		instance,
 		nil,
 		nil,
@@ -60,7 +62,7 @@ func NewDexDeploymentFor(instance *kubicv1beta1.DexConfiguration, reconciler *Re
 }
 
 // GetFrom obtains the current deployment fromm the Deployment specified in the instance.Status
-func (deploy *DexDeployment) GetFrom(instance *kubicv1beta1.DexConfiguration) error {
+func (deploy *Deployment) GetFrom(instance *kubicv1beta1.DexConfiguration) error {
 	var err error
 	var name, namespace string
 
@@ -88,7 +90,7 @@ func (deploy *DexDeployment) GetFrom(instance *kubicv1beta1.DexConfiguration) er
 
 // CreateLocal generates a local Deployment instance. Note well that this instance is
 // not published to the apiserver: users must use `CreateOrUpdate()` for doing that.
-func (deploy *DexDeployment) CreateLocal(configMap *DexConfigMap, cert *DexCertificate) error {
+func (deploy *Deployment) CreateLocal(configMap *ConfigMap, cert *Certificate) error {
 	var err error
 
 	// some checks: deployment cannot access Secrets in different namespaces
@@ -161,14 +163,14 @@ func (deploy *DexDeployment) CreateLocal(configMap *DexConfigMap, cert *DexCerti
 	return nil
 }
 
-// NeedsCreateOrUpdate returns true if the Deployment is not in the cluster or it needs to be updated
-func (deploy *DexDeployment) IsRunning() bool {
+// IsRunning returns true if the Deployment is not in the cluster or it needs to be updated
+func (deploy *Deployment) IsRunning() bool {
 	return deploy.current != nil
 }
 
 // NeedsCreateOrUpdate returns true if the Deployment is not in the cluster or it needs to be updated
 // CreateLocal() must have been previously
-func (deploy DexDeployment) NeedsCreateOrUpdate() bool {
+func (deploy Deployment) NeedsCreateOrUpdate() bool {
 	if deploy.generated == nil {
 		panic("Deployment has not been generated")
 	}
@@ -179,7 +181,7 @@ func (deploy DexDeployment) NeedsCreateOrUpdate() bool {
 }
 
 // CreateOrUpdate creates or updates the deployment
-func (deploy *DexDeployment) CreateOrUpdate() error {
+func (deploy *Deployment) CreateOrUpdate() error {
 	var err error
 
 	if deploy.generated == nil {
@@ -234,7 +236,7 @@ func (deploy *DexDeployment) CreateOrUpdate() error {
 
 // Delete removes the current deployment as well as all the other resources created
 // It will ignore IsNotFound errors.
-func (deploy *DexDeployment) Delete() error {
+func (deploy *Deployment) Delete() error {
 	if deploy.current != nil {
 		if err := apiclient.DeleteDeploymentForeground(deploy.reconciler.Clientset, deploy.GetNamespace(), deploy.GetName()); err != nil {
 			return err
@@ -265,21 +267,25 @@ func (deploy *DexDeployment) Delete() error {
 	return nil
 }
 
-func (deploy DexDeployment) GetObject() metav1.Object {
+// GetObject returns the generated metav1.Object
+func (deploy Deployment) GetObject() metav1.Object {
 	if deploy.generated == nil {
 		panic("needs to be generated first")
 	}
 	return deploy.generated
 }
 
-func (deploy DexDeployment) GetName() string {
+// GetName returns the name of the dex config
+func (deploy Deployment) GetName() string {
 	return fmt.Sprintf("%s-deploy", dexcfg.DefaultPrefix)
 }
 
-func (deploy DexDeployment) GetNamespace() string {
+// GetNamespace returns the default dex Namespace
+func (deploy Deployment) GetNamespace() string {
 	return dexDefaultNamespace
 }
 
-func (deploy DexDeployment) String() string {
+// String returns the Namespace object as a string
+func (deploy Deployment) String() string {
 	return util.NamespacedObjToString(deploy)
 }
