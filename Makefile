@@ -94,7 +94,7 @@ golint:
 
 .PHONY: check
 check: fmt golint
-	@for d in $$($(GO) list ./... | grep -v /vendor/); do golint $${d}; done
+	@for d in $$($(GO) list ./... | grep -v /vendor/); do golint -set_exit_status $${d}; done
 	@$(GO) tool vet ${DEX_OPER_SRCS}
 
 .PHONY: test
