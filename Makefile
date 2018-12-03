@@ -110,7 +110,7 @@ clean: docker-image-clean
 	rm -f $(DEX_OPER_EXE) go.sum
 
 .PHONY: coverage
-coverage: 
+coverage:
 	$(GO_NOMOD) tool cover -html=cover.out
 
 #############################################################
