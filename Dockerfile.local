@@ -2,7 +2,7 @@
 # A Dockerfile for generating an image quick&fast from a local build
 #
 
-FROM opensuse:tumbleweed
+FROM opensuse/leap:15.0
 
 ARG BUILD_DIR="/go/src/github.com/kubic-project/dex-operator"
 ARG BUILT_EXE="cmd/dex-operator/dex-operator"
