@@ -130,5 +130,5 @@ spec:
       - name: tls
         secret:
           secretName: {{ .DexCertsSecretName }}
-`
-)
+`)
+

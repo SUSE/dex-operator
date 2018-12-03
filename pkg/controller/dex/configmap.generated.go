@@ -48,7 +48,7 @@ data:
     connectors:
   {{- range $Con := .LDAPConnectors }}
     - type: ldap
-      id: {{ $Con.Spec.Id }}
+      id: {{ $Con.Spec.ID }}
       name: {{ $Con.Spec.Name }}
       config:
         # Host and optional port of the LDAP server in the form "host:port".
@@ -104,7 +104,7 @@ data:
           # username attribute used for comparing user entries. This will be translated
           # and combined with the other filter as "(<attr>=<username>)".
           username: {{ $Con.Spec.User.Username }}
-          idAttr: {{ $Con.Spec.User.IdAttr }}
+          idAttr: {{ $Con.Spec.User.IDAttr }}
 		  {{- if $Con.Spec.User.EmailAttr }}
           # Required. Attribute to map to Email.
           emailAttr: {{ $Con.Spec.User.EmailAttr }}
@@ -172,6 +172,5 @@ data:
   {{- end }}
 
 {{- end }}
+`)
 
-`
-)
