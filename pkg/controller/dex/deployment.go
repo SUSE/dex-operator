@@ -221,7 +221,7 @@ func (deploy *Deployment) CreateOrUpdate() error {
 		port = deploy.DexCfg.Spec.NodePort
 	}
 
-	if err := createOrUpdateDexService(deploy.reconciler.Clientset, port); err != nil {
+	if err := createOrUpdateDexService(deploy.reconciler.Clientset, deploy.GetName(), port); err != nil {
 		glog.V(5).Infof("[kubic] could not create/update Service: %s", err)
 		return err
 	}
