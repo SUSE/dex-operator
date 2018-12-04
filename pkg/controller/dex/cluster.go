@@ -403,7 +403,7 @@ func deleteDexRBACRules(cli clientset.Interface) error {
 	return nil
 }
 
-func createOrUpdateDexService(cli clientset.Interface, nodeport int) error {
+func createOrUpdateDexService(cli clientset.Interface, dexDeployName string, nodeport int) error {
 	// try to replicate the old behaviour in
 	// https://github.com/kubic-project/salt/blob/master/salt/addons/dex/manifests/30-network-policy.yaml
 
@@ -411,6 +411,9 @@ func createOrUpdateDexService(cli clientset.Interface, nodeport int) error {
 
 	service := dexService.DeepCopy()
 	service.Spec.Ports[0].NodePort = int32(nodeport)
+	service.Spec.Selector = map[string]string{
+		"app": dexDeployName,
+	}
 
 	glog.V(3).Infof("[kubic] creating Service '%s' (nodeport=%d)",
 		service.GetName(), service.Spec.Ports[0].NodePort)
