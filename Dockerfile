@@ -3,10 +3,12 @@
 # (see Dockerfile.local if you want something
 # faster for development)
 #
+FROM opensuse/leap:15.0 as builder
+RUN zypper ar https://download.opensuse.org/repositories/devel:/languages:/go/openSUSE_Leap_15.0/devel:languages:go.repo
 
-FROM opensuse:tumbleweed as builder
-
-RUN zypper in -y make git go1.11
+RUN zypper --non-interactive --no-gpg-checks  ref
+RUN zypper in -y make git go
+RUN go version
 
 ENV GOPATH="/go"
 ENV GOBIN="/go/bin"
@@ -22,7 +24,7 @@ RUN make -C /go/src/github.com/kubic-project/dex-operator clean all
 ####################
 # final stage
 ####################
-FROM opensuse:tumbleweed
+FROM opensuse/leap:15.0
 
 ARG BUILD_DIR="/go/src/github.com/kubic-project/dex-operator"
 ARG BUILT_EXE="cmd/dex-operator/dex-operator"
