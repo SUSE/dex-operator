@@ -99,7 +99,6 @@ func newCmdVersion(out io.Writer) *cobra.Command {
 			fmt.Fprintf(out, "dex-operator version: %s (build: %s)\n", Version, Build)
 		},
 	}
-	cmd.Flags().StringP("output", "o", "", "Output format; available options are 'yaml', 'json' and 'short'")
 	return cmd
 }
 
