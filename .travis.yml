@@ -1,0 +1,30 @@
+language: go
+
+# SCOPE OF THIS :
+# we use travis only for running the acceptance tests for operators.
+# Circleci isolated container network so we cannot run kind in circleci.
+#
+# Add all other tests in circleci and use  make e2e-test
+services:
+        - docker
+
+go:
+  - '1.11.x'
+
+services:
+          - docker
+
+jobs:
+  include:
+    - stage: Integration Tests
+      before_script:
+        # Download and install kubectl
+        - curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+        
+        # Download and install Kind
+        - make kind-install KIND_VERSION="0.0.1"
+        
+        # Create a new Kubernetes cluster using KinD
+        - make kind-create-cluster
+
+      script: make kind-e2e-tests
