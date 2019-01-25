@@ -11,7 +11,7 @@ A Dex operator for Kubernetes, developed inside the
 - [Features](#features)
 - [Quickstart](docs/dex-operator.md)
 - [Devel](docs/devel.md)
-- [Additional Info](#extra)
+- [Additional Info](#see-also)
 
 ## Features
 
